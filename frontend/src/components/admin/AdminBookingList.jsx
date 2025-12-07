@@ -59,9 +59,9 @@ export default function AdminBookingList() {
 
     const getStatusBadge = (status) => {
         switch(status) {
-            case 'pending': return <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold border border-yellow-200">MENUNGGU</span>;
-            case 'approved': return <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200">DISETUJUI</span>;
-            case 'rejected': return <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold border border-red-200">DITOLAK</span>;
+            case 'pending': return <span className="px-3 py-1 bg-yellow-100 text-yellow-700 -full text-xs font-bold border border-yellow-200">MENUNGGU</span>;
+            case 'approved': return <span className="px-3 py-1 bg-green-100 text-green-700 -full text-xs font-bold border border-green-200">DISETUJUI</span>;
+            case 'rejected': return <span className="px-3 py-1 bg-red-100 text-red-700 -full text-xs font-bold border border-red-200">DITOLAK</span>;
             default: return null;
         }
     };
@@ -76,13 +76,13 @@ export default function AdminBookingList() {
             {loading ? (
                 <div className="text-center py-10">Loading data...</div>
             ) : bookings.length === 0 ? (
-                <div className="bg-white p-8 rounded-xl border border-dashed text-center text-gray-500">
+                <div className="bg-white p-8 -xl border border-dashed text-center text-gray-500">
                     Tidak ada data pengajuan.
                 </div>
             ) : (
                 <div className="space-y-4">
                     {bookings.map((item) => (
-                        <div key={item.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col lg:flex-row gap-6 hover:shadow-md transition">
+                        <div key={item.id} className="bg-white p-6 -xl shadow-sm border border-gray-100 flex flex-col lg:flex-row gap-6 hover:shadow-md transition">
                             
                             {/* INFO UTAMA */}
                             <div className="flex-1">
@@ -94,7 +94,7 @@ export default function AdminBookingList() {
                                 
                                 <h3 className="text-xl font-bold text-gray-800 mb-1">{item.room?.name || 'Unknown Room'}</h3>
                                 
-                                <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 mb-4">
+                                <div className="bg-gray-50 p-3 -lg border border-gray-200 mb-4">
                                     <p className="text-sm text-gray-700">
                                         <span className="font-semibold block text-xs text-gray-500 uppercase mb-1">Tujuan:</span> 
                                         {item.purpose}
@@ -136,12 +136,12 @@ export default function AdminBookingList() {
                                         href={`http://localhost:8000/storage/${item.document_path}`} 
                                         target="_blank" 
                                         rel="noreferrer"
-                                        className="flex items-center justify-center gap-2 w-full py-2.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition text-sm font-semibold border border-blue-100"
+                                        className="flex items-center justify-center gap-2 w-full py-2.5 bg-blue-50 text-blue-600 -lg hover:bg-blue-100 transition text-sm font-semibold border border-blue-100"
                                     >
                                         <FileText size={16} /> Lihat Dokumen
                                     </a>
                                 ) : (
-                                    <div className="text-center text-xs text-gray-400 italic py-2 bg-gray-50 rounded">
+                                    <div className="text-center text-xs text-gray-400 italic py-2 bg-gray-50 ">
                                         Tidak ada dokumen
                                     </div>
                                 )}
@@ -152,7 +152,7 @@ export default function AdminBookingList() {
                                         <button 
                                             onClick={() => handleUpdateStatus(item.id, 'rejected')}
                                             disabled={processingId === item.id}
-                                            className="flex flex-col items-center justify-center gap-1 py-2 bg-white border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition text-xs font-bold disabled:opacity-50"
+                                            className="flex flex-col items-center justify-center gap-1 py-2 bg-white border border-red-200 text-red-600 -lg hover:bg-red-50 transition text-xs font-bold disabled:opacity-50"
                                         >
                                             <X size={18} />
                                             Tolak
@@ -160,7 +160,7 @@ export default function AdminBookingList() {
                                         <button 
                                             onClick={() => handleUpdateStatus(item.id, 'approved')}
                                             disabled={processingId === item.id}
-                                            className="flex flex-col items-center justify-center gap-1 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-xs font-bold shadow-lg shadow-green-200 disabled:opacity-50"
+                                            className="flex flex-col items-center justify-center gap-1 py-2 bg-green-600 text-white -lg hover:bg-green-700 transition text-xs font-bold shadow-lg shadow-green-200 disabled:opacity-50"
                                         >
                                             <Check size={18} />
                                             Setujui

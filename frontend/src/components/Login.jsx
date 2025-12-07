@@ -23,7 +23,6 @@ export default function Login() {
             localStorage.setItem('token', response.data.access_token);
             localStorage.setItem('user', JSON.stringify(response.data.user));
 
-            // Redirect berdasarkan role
             if (response.data.user.role === 'admin') {
                navigate('/admin/dashboard');
             } else {
@@ -43,28 +42,44 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary to-gray-900 p-4">
+        // Background Halaman: Gray-900
+        <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4 font-sans">
             
-            <div className="bg-white/10 backdrop-blur-lg border border-white/20 p-8 rounded-2xl shadow-2xl w-full max-w-md">
+            {/* Card Login: Putih & Tanpa Rounded (Sharp) */}
+            <div className="bg-white w-full max-w-md p-10 shadow-2xl animate-fade-in-up">
                 
+                {/* Logo Section - Ditengah */}
+                <div className="flex justify-center mb-8">
+                    <div className="w-24 h-24 flex items-center justify-center">
+                         {/* Ganti src dengan path logo Anda */}
+                        <img 
+                            src="https://siakadu.unila.ac.id/assets/v1/img/logo_unila.png" 
+                            alt="Logo Elektro" 
+                            className="w-full h-full object-contain"
+                        />
+                    </div>
+                </div>
+
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-                    <p className="text-gray-300 text-sm">Sistem Peminjaman Ruang Teknik Elektro</p>
+                    <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-widest">Login Area</h1>
+                    <p className="text-gray-500 text-sm mt-2">Sistem Peminjaman Ruang Teknik Elektro</p>
                 </div>
 
                 {error && (
-                    <div className="bg-red-500/20 border border-red-500 text-red-200 text-sm p-3 rounded-lg mb-4 text-center">
-                        {error}
+                    <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 text-sm">
+                        <p>{error}</p>
                     </div>
                 )}
 
                 <form onSubmit={handleLogin} className="space-y-6">
                     <div>
-                        <label className="block text-gray-300 text-sm font-medium mb-2">Email Address</label>
+                        <label className="block text-gray-700 text-xs font-bold uppercase tracking-wide mb-2">
+                            Email Address
+                        </label>
                         <input 
                             type="email" 
                             required
-                            className="w-full px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-200"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors duration-200"
                             placeholder="nama@email.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
@@ -72,11 +87,16 @@ export default function Login() {
                     </div>
 
                     <div>
-                        <label className="block text-gray-300 text-sm font-medium mb-2">Password</label>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-gray-700 text-xs font-bold uppercase tracking-wide">
+                                Password
+                            </label>
+                            <a href="#" className="text-xs text-gray-500 hover:text-gray-900">Forgot Password?</a>
+                        </div>
                         <input 
                             type="password" 
                             required
-                            className="w-full px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-600 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition duration-200"
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors duration-200"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -86,14 +106,14 @@ export default function Login() {
                     <button 
                         type="submit" 
                         disabled={loading}
-                        className="w-full py-3 px-4 bg-accent hover:bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-blue-500/30 transition duration-300 transform hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-4 bg-gray-900 hover:bg-gray-800 text-white font-bold uppercase tracking-widest transition-all duration-300 hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                         {loading ? 'Processing...' : 'Sign In'}
                     </button>
                 </form>
 
-                <div className="mt-6 text-center text-sm text-gray-400">
-                    Belum punya akun? <a href="#" className="text-accent hover:underline">Daftar disini</a>
+                <div className="mt-8 text-center text-sm text-gray-500">
+                    Belum punya akun? <a href="/register" className="text-gray-900 font-bold hover:underline">Daftar Sekarang</a>
                 </div>
             </div>
         </div>

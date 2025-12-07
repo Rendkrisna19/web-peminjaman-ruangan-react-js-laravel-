@@ -15,65 +15,74 @@ class BookingController extends Controller
     // 1. AJUKAN PEMINJAMAN (User)
     public function store(Request $request)
     {
-        // Validasi Input
+        // 1. Validasi Input Dasar
         $validator = Validator::make($request->all(), [
-            'room_id' => 'required|exists:rooms,id',
-            'start_time' => 'required|date|after:now', // Tidak boleh tanggal lampau
-            'end_time' => 'required|date|after:start_time', // Harus setelah jam mulai
-            'purpose' => 'required|string',
-            'document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // Max 5MB
+            'room_id'    => 'required|exists:rooms,id',
+            // after_or_equal:now mencegah error jika user submit di detik yang sama
+            'start_time' => 'required|date|after_or_equal:now', 
+            'end_time'   => 'required|date|after:start_time',
+            'purpose'    => 'required|string|min:5',
+            'document'   => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // Max 5MB
+        ], [
+            // Custom Error Messages (Opsional, agar lebih ramah)
+            'start_time.after_or_equal' => 'Waktu mulai tidak boleh di masa lalu.',
+            'end_time.after' => 'Waktu selesai harus setelah waktu mulai.',
+            'document.max' => 'Ukuran dokumen maksimal 5MB.',
+            'document.required' => 'Wajib upload surat permohonan.',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'message' => 'Validasi Gagal',
+                'errors'  => $validator->errors()
+            ], 422);
         }
 
-        // Cek apakah ruangan aktif
+        // 2. Cek Status Ruangan (Aktif/Tidak)
         $room = Room::find($request->room_id);
         if (!$room->is_active) {
-            return response()->json(['message' => 'Maaf, ruangan ini sedang tidak dapat dipinjam (Non-aktif).'], 400);
+            return response()->json(['message' => 'Ruangan ini sedang dalam perbaikan (Maintenance).'], 400);
         }
 
-        // LOGIKA CEK BENTROK JADWAL (Overlap Check)
-        // Kita cek apakah ada booking lain yang statusnya 'approved' di jam yang sama
+        // 3. Cek Bentrok Jadwal (Overlap Logic)
+        // Rumus Overlap: (StartA < EndB) and (EndA > StartB)
+        // Kita cek hanya pada booking yang statusnya 'approved'
         $isConflict = Booking::where('room_id', $request->room_id)
             ->where('status', 'approved')
             ->where(function ($query) use ($request) {
-                $query->whereBetween('start_time', [$request->start_time, $request->end_time])
-                      ->orWhereBetween('end_time', [$request->start_time, $request->end_time])
-                      ->orWhere(function ($q) use ($request) {
-                          $q->where('start_time', '<', $request->start_time)
-                            ->where('end_time', '>', $request->end_time);
-                      });
+                $query->where('start_time', '<', $request->end_time)
+                      ->where('end_time', '>', $request->start_time);
             })->exists();
 
         if ($isConflict) {
-            return response()->json(['message' => 'Ruangan sudah dipesan/disetujui pada jam tersebut.'], 409);
+            return response()->json([
+                'message' => 'Jadwal bentrok! Ruangan sudah dipesan & disetujui pada jam tersebut.'
+            ], 409); // 409 Conflict
         }
 
-        // Proses Upload File Dokumen
-        $path = null;
-        if ($request->hasFile('document')) {
+        // 4. Upload File
+        try {
             $path = $request->file('document')->store('documents', 'public');
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Gagal mengupload file.'], 500);
         }
 
-        // Simpan Data Booking
+        // 5. Simpan ke Database
         $booking = Booking::create([
-            'user_id' => $request->user()->id, // Ambil ID dari token login
-            'room_id' => $request->room_id,
-            'start_time' => $request->start_time,
-            'end_time' => $request->end_time,
-            'purpose' => $request->purpose,
+            'user_id'       => $request->user()->id,
+            'room_id'       => $request->room_id,
+            'start_time'    => $request->start_time,
+            'end_time'      => $request->end_time,
+            'purpose'       => $request->purpose,
             'document_path' => $path,
-            'status' => 'pending', // Default status menunggu
+            'status'        => 'pending',
         ]);
 
         return response()->json([
-            'message' => 'Pengajuan berhasil dikirim. Menunggu verifikasi Admin.',
-            'data' => $booking
+            'message' => 'Pengajuan berhasil! Menunggu verifikasi admin.',
+            'data'    => $booking
         ], 201);
     }
-
     // 2. RIWAYAT PEMINJAMAN SAYA (User)
     public function userBookings(Request $request)
     {
@@ -157,6 +166,36 @@ class BookingController extends Controller
 
         return response()->json([
             'message' => 'Data laporan berhasil diambil',
+            'data' => $data
+        ]);
+    }
+
+    public function getReport(Request $request)
+    {
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        $status = $request->query('status'); // 'all', 'approved', 'rejected', 'pending'
+
+        $query = Booking::with(['user', 'room']);
+
+        // Filter Tanggal
+        if ($startDate && $endDate) {
+            $query->whereBetween('start_time', [
+                $startDate . ' 00:00:00', 
+                $endDate . ' 23:59:59'
+            ]);
+        }
+
+        // Filter Status
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        // Urutkan dari yang terlama ke terbaru (biar rapi saat diprint)
+        $data = $query->orderBy('start_time', 'asc')->get();
+
+        return response()->json([
+            'message' => 'Laporan berhasil diambil',
             'data' => $data
         ]);
     }

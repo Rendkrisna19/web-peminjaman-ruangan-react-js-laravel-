@@ -162,7 +162,7 @@ export default function AdminRoomList() {
                 <h1 className="text-2xl font-bold text-gray-800">Kelola Ruangan</h1>
                 <button 
                     onClick={openCreate}
-                    className="bg-primary hover:bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition"
+                    className="bg-primary hover:bg-gray-800 text-white px-4 py-2  flex items-center gap-2 transition"
                 >
                     <Plus size={18} /> Tambah Ruangan
                 </button>
@@ -170,14 +170,14 @@ export default function AdminRoomList() {
 
             {/* Error Banner Global */}
             {errorMsg && !showModal && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 flex items-center gap-2">
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3  mb-4 flex items-center gap-2">
                     <AlertCircle size={20} />
                     <span>{errorMsg}</span>
                 </div>
             )}
 
             {/* TABLE LIST */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white -xl shadow-sm border border-gray-200 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead className="bg-gray-50 text-gray-600 text-sm uppercase tracking-wider">
                         <tr>
@@ -197,7 +197,7 @@ export default function AdminRoomList() {
                             rooms.map((room) => (
                                 <tr key={room.id} className="hover:bg-gray-50 transition">
                                     <td className="p-4">
-                                        <div className="w-16 h-12 bg-gray-100 rounded overflow-hidden border">
+                                        <div className="w-16 h-12 bg-gray-100  overflow-hidden border">
                                             {room.image_url ? (
                                                 <img src={room.image_url} alt={room.name} className="w-full h-full object-cover" />
                                             ) : (
@@ -208,13 +208,13 @@ export default function AdminRoomList() {
                                     <td className="p-4 font-medium text-gray-800">{room.name}</td>
                                     <td className="p-4 text-gray-500">{room.capacity} Org</td>
                                     <td className="p-4">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${room.is_active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
+                                        <span className={`px-2 py-1 -full text-xs font-bold ${room.is_active ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
                                             {room.is_active ? 'Aktif' : 'Non-Aktif'}
                                         </span>
                                     </td>
                                     <td className="p-4 flex justify-end gap-2">
-                                        <button onClick={() => openEdit(room)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"><Edit size={18}/></button>
-                                        <button onClick={() => handleDelete(room.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg"><Trash size={18}/></button>
+                                        <button onClick={() => openEdit(room)} className="p-2 text-blue-500 hover:bg-blue-50 -lg"><Edit size={18}/></button>
+                                        <button onClick={() => handleDelete(room.id)} className="p-2 text-red-500 hover:bg-red-50 -lg"><Trash size={18}/></button>
                                     </td>
                                 </tr>
                             ))
@@ -226,7 +226,7 @@ export default function AdminRoomList() {
             {/* MODAL POPUP */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-                    <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white p-6 -xl w-full max-w-md shadow-2xl max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-4 border-b pb-2">
                             <h3 className="text-lg font-bold text-gray-800">{editId ? 'Edit Ruangan' : 'Tambah Ruangan'}</h3>
                             <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-red-500"><X size={20}/></button>
@@ -234,7 +234,7 @@ export default function AdminRoomList() {
                         
                         {/* Error Banner Modal */}
                         {errorMsg && (
-                            <div className="bg-red-50 text-red-600 text-sm p-3 rounded mb-4 border border-red-200">
+                            <div className="bg-red-50 text-red-600 text-sm p-3  mb-4 border border-red-200">
                                 {errorMsg}
                             </div>
                         )}
@@ -243,14 +243,14 @@ export default function AdminRoomList() {
                             {/* Input Gambar */}
                             <div>
                                 <label className="block text-sm font-medium mb-1 text-gray-700">Foto Ruangan</label>
-                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 relative group transition-colors">
+                                <div className="border-2 border-dashed border-gray-300 -lg p-4 text-center cursor-pointer hover:bg-gray-50 relative group transition-colors">
                                     <input type="file" accept="image/*" onChange={handleFileChange} 
                                         className="absolute inset-0 opacity-0 cursor-pointer z-10" />
                                     
                                     {imagePreview ? (
                                         <div className="relative">
-                                            <img src={imagePreview} alt="Preview" className="h-32 w-full object-cover rounded-md mx-auto" />
-                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-xs rounded-md">
+                                            <img src={imagePreview} alt="Preview" className="h-32 w-full object-cover -md mx-auto" />
+                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-xs -md">
                                                 Ganti Gambar
                                             </div>
                                         </div>
@@ -265,26 +265,26 @@ export default function AdminRoomList() {
 
                             <div>
                                 <label className="block text-sm font-medium mb-1 text-gray-700">Nama Ruangan</label>
-                                <input type="text" className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none" required 
+                                <input type="text" className="w-full border border-gray-300 -lg p-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none" required 
                                     value={name} onChange={e => setName(e.target.value)} placeholder="Contoh: Lab Komputer 1" />
                             </div>
                             
                             <div>
                                 <label className="block text-sm font-medium mb-1 text-gray-700">Kapasitas (Orang)</label>
-                                <input type="number" className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none" required 
+                                <input type="number" className="w-full border border-gray-300 -lg p-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none" required 
                                     value={capacity} onChange={e => setCapacity(e.target.value)} placeholder="30" />
                             </div>
                             
                             <div>
                                 <label className="block text-sm font-medium mb-1 text-gray-700">Deskripsi</label>
-                                <textarea className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none" rows="3"
+                                <textarea className="w-full border border-gray-300 -lg p-2.5 focus:ring-2 focus:ring-primary focus:border-transparent outline-none" rows="3"
                                     value={description} onChange={e => setDescription(e.target.value)} placeholder="Fasilitas: AC, Proyektor..."></textarea>
                             </div>
                             
-                            <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <div className="flex items-center gap-3 bg-gray-50 p-3 -lg border border-gray-100">
                                 <input type="checkbox" id="active" checked={isActive} 
                                     onChange={e => setIsActive(e.target.checked)} 
-                                    className="w-5 h-5 text-primary rounded focus:ring-primary"
+                                    className="w-5 h-5 text-primary  focus:ring-primary"
                                 />
                                 <label htmlFor="active" className="text-sm font-medium text-gray-700 cursor-pointer select-none">
                                     Set Status Aktif
@@ -294,7 +294,7 @@ export default function AdminRoomList() {
                             <button 
                                 type="submit" 
                                 disabled={isSubmitting}
-                                className="w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
+                                className="w-full bg-primary text-white py-3 -xl font-bold hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
                             >
                                 {isSubmitting ? (
                                     <span className="flex items-center gap-2">

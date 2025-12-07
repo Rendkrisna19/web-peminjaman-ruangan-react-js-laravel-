@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import UserLayout from './UserLayout';
 import api from '../api';
-import { Users, Monitor, AlertCircle, Clock } from 'lucide-react'; // Tambah icon Clock
+import { Users, Monitor, AlertCircle, Clock, Ban } from 'lucide-react'; // Tambah icon Ban
 import BookingForm from './BookingForm'; 
 
 export default function RoomList() {
@@ -28,92 +28,113 @@ export default function RoomList() {
     };
 
     // Helper warna badge
-    const getStatusBadgeColor = (status, isActiveOriginal) => {
-        if (!isActiveOriginal) return 'bg-gray-500'; // Maintenance database
-        if (status === 'booked') return 'bg-orange-500'; // Sedang Dipakai
-        return 'bg-green-500'; // Tersedia
+    const getStatusBadgeColor = (status, isActive) => {
+        if (!isActive) return 'bg-gray-800'; // Maintenance (Gelap)
+        if (status === 'booked') return 'bg-red-600'; // Sedang Dipakai (Merah)
+        return 'bg-green-600'; // Tersedia (Hijau)
     };
 
     return (
         <UserLayout>
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-800">Daftar Ruangan</h1>
-                <p className="text-gray-500 mt-2">Pilih fasilitas yang tersedia untuk menunjang kegiatan akademik Anda.</p>
+            {/* Header Section */}
+            <div className="mb-10 flex flex-col md:flex-row justify-between items-end border-b border-gray-200 pb-6">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-900 uppercase tracking-tight">Daftar Ruangan</h1>
+                    <p className="text-gray-500 mt-2 text-sm uppercase tracking-wider">Pilih Fasilitas Akademik</p>
+                </div>
+                <div className="hidden md:block text-xs font-bold text-gray-400 uppercase tracking-widest">
+                    Total Unit: {rooms.length}
+                </div>
             </div>
 
             {loading ? (
                 <div className="flex justify-center items-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    <div className="animate-spin h-10 w-10 border-4 border-gray-200 border-t-gray-900"></div>
                 </div>
             ) : rooms.length === 0 ? (
-                <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-300">
-                    <AlertCircle className="mx-auto text-gray-400 mb-2" size={40} />
-                    <p className="text-gray-500 font-medium">Belum ada ruangan yang ditambahkan.</p>
+                <div className="text-center py-20 bg-gray-50 border border-gray-200">
+                    <AlertCircle className="mx-auto text-gray-400 mb-4" size={40} />
+                    <p className="text-gray-900 font-bold uppercase tracking-wide">Data Ruangan Kosong</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {rooms.map((room) => {
-                        // KITA GUNAKAN LOGIC BARU DARI BACKEND
-                        // is_active_display: false jika maintenance ATAU sedang dibooking
-                        const isAvailable = room.is_active_display; 
+                        // LOGIC BARU:
+                        // Ruangan tersedia JIKA: Aktif (True) DAN Status bukan 'booked'
+                        const isBooked = room.current_status === 'booked';
+                        const isMaintenance = !room.is_active;
+                        const isAvailable = !isBooked && !isMaintenance;
                         
                         return (
                             <div 
                                 key={room.id} 
-                                className={`group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
-                                    !isAvailable ? 'opacity-90 grayscale-[0.8]' : ''
-                                }`}
+                                className={`group bg-white border border-gray-200 flex flex-col transition-all duration-300 relative
+                                    ${isAvailable 
+                                        ? 'hover:border-gray-900 hover:shadow-lg' 
+                                        : 'opacity-60 grayscale cursor-not-allowed bg-gray-50' // Efek Grayscale & Block
+                                    }
+                                `}
                             >
+                                {/* Overlay Block jika tidak tersedia (Opsional agar tidak bisa diklik sama sekali) */}
+                                {!isAvailable && <div className="absolute inset-0 z-10 bg-white/10 cursor-not-allowed"></div>}
+
                                 {/* Gambar Ruangan */}
-                                <div className="h-56 bg-gray-200 relative overflow-hidden">
+                                <div className="h-56 bg-gray-100 relative overflow-hidden">
                                     <img 
                                         src={room.image_url || "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80"} 
                                         alt={room.name} 
                                         onError={handleImageError}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        className={`w-full h-full object-cover transition-transform duration-700 
+                                            ${isAvailable ? 'group-hover:scale-105' : 'grayscale'}
+                                        `}
                                     />
                                     
-                                    {/* Badge Status Dinamis */}
-                                    <div className="absolute top-4 right-4">
-                                        <span className={`${getStatusBadgeColor(room.current_status, room.is_active)} backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1`}>
-                                            {room.current_status === 'booked' && <Clock size={12}/>}
-                                            {/* Prioritaskan status 'booked' jika aktif, kalau maintenance tulis maintenance */}
-                                            {!room.is_active ? 'Maintenance' : (room.status_label || 'Tersedia')}
+                                    {/* Badge Status */}
+                                    <div className="absolute top-0 right-0 z-20">
+                                        <span className={`${getStatusBadgeColor(room.current_status, room.is_active)} text-white text-[10px] font-bold px-4 py-2 uppercase tracking-wider flex items-center gap-2 shadow-sm`}>
+                                            {isBooked && <Clock size={12}/>}
+                                            {isMaintenance && <Ban size={12}/>}
+                                            
+                                            {isMaintenance ? 'MAINTENANCE' : (isBooked ? 'DIGUNAKAN' : 'TERSEDIA')}
                                         </span>
                                     </div>
                                 </div>
 
-                                {/* Konten */}
-                                <div className="p-6">
-                                    <h3 className="text-xl font-bold text-gray-800 mb-2">{room.name}</h3>
+                                {/* Konten Card */}
+                                <div className="p-6 flex flex-col flex-grow relative z-20">
+                                    <h3 className="text-lg font-bold text-gray-900 uppercase tracking-wide mb-2 truncate">
+                                        {room.name}
+                                    </h3>
                                     
-                                    <p className="text-gray-500 text-sm mb-5 line-clamp-2 leading-relaxed">
+                                    <p className="text-gray-500 text-xs mb-6 line-clamp-2 leading-relaxed h-10">
                                         {room.description || 'Fasilitas lengkap untuk kegiatan belajar mengajar.'}
                                     </p>
 
-                                    <div className="flex items-center gap-6 text-gray-400 text-sm mb-6 border-t border-gray-100 pt-4">
+                                    <div className="flex items-center gap-6 text-gray-500 text-xs mb-6 border-t border-gray-100 pt-4 mt-auto">
                                         <div className="flex items-center gap-2">
-                                            <Users size={18} className="text-primary" />
-                                            <span className="font-medium text-gray-600">{room.capacity} Orang</span>
+                                            <Users size={16} className="text-gray-900" />
+                                            <span className="font-semibold">{room.capacity} ORANG</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <Monitor size={18} className="text-primary" />
-                                            <span className="font-medium text-gray-600">Proyektor</span>
+                                            <Monitor size={16} className="text-gray-900" />
+                                            <span className="font-semibold">PROYEKTOR</span>
                                         </div>
                                     </div>
 
+                                    {/* Tombol Action */}
                                     <button 
                                         onClick={() => isAvailable && setSelectedRoom(room)}
                                         disabled={!isAvailable}
-                                        className={`w-full py-3 rounded-xl font-bold transition-all duration-200 shadow-md ${
+                                        className={`w-full py-4 text-xs font-bold uppercase tracking-widest transition-all duration-200 border z-30 relative ${
                                             isAvailable 
-                                            ? 'bg-primary text-white hover:bg-gray-800 hover:shadow-lg active:scale-95' 
-                                            : 'bg-gray-200 text-gray-500 cursor-not-allowed border border-gray-200'
+                                            ? 'bg-white border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white cursor-pointer' 
+                                            : 'bg-gray-200 border-transparent text-gray-500 cursor-not-allowed'
                                         }`}
                                     >
-                                        {/* Ubah text tombol sesuai kondisi */}
-                                        {!room.is_active ? 'Dalam Perbaikan' : 
-                                         (room.current_status === 'booked' ? 'Sedang Digunakan' : 'Ajukan Peminjaman')}
+                                        {isMaintenance 
+                                            ? 'DALAM PERBAIKAN' 
+                                            : (isBooked ? 'SEDANG DIGUNAKAN' : 'PINJAM SEKARANG')
+                                        }
                                     </button>
                                 </div>
                             </div>

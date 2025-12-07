@@ -7,6 +7,7 @@ import RoomList from './components/RoomList';
 import BookingList from './components/BookingList';
 import AdminRoomList from './components/admin/AdminRoomList';     // Import Baru
 import AdminBookingList from './components/admin/AdminBookingList'; // Import Baru
+import AdminReport from './components/admin/AdminReport';
 
 // Helper untuk Cek Login
 const ProtectedRoute = ({ children }) => {
@@ -101,6 +102,17 @@ function App() {
             </ProtectedRoute>
           } 
         />
+           <Route 
+  path="/admin/reports" 
+  element={
+    <ProtectedRoute>
+      <AdminRoute>
+        <AdminReport />
+      </AdminRoute>
+    </ProtectedRoute>
+  } 
+/>
+        
       </Routes>
     </Router>
   );

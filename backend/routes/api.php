@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BookingController;
 
 // --- PUBLIC ROUTES ---
@@ -35,5 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/bookings', [BookingController::class, 'index']);
         Route::put('/bookings/{id}/status', [BookingController::class, 'updateStatus']);
         Route::get('/reports', [BookingController::class, 'report']);
+
+        Route::get('/dashboard-stats', [DashboardController::class, 'index']);
+        // Di dalam group middleware 'is_admin':
+Route::get('/admin/reports', [BookingController::class, 'getReport']);
     });
 });

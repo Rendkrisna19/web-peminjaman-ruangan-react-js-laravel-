@@ -4,7 +4,6 @@ const api = axios.create({
     // Pastikan URL ini sesuai dengan port Laravel Anda
     baseURL: 'http://localhost:8000/api',
     headers: {
-        'Content-Type': 'application/json',
         'Accept': 'application/json',
     }
 });
